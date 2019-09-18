@@ -15,10 +15,16 @@ using std::endl;
 
 #include "Angel.h"
 
-#include "glm/glm.hpp"
-//general vector types
+#include "glm/glm.hpp" //general vector types
+#include "glm/gtc/matrix_transform.hpp" // for glm::ortho
+#include "glm/gtc/type_ptr.hpp" //to send matricies gpu-side
 
 
+int animation_time = 0;
+GLint time_loc;
+
+glm::mat4 projection;
+GLint proj_loc;
 
 void init()
 {
@@ -30,7 +36,7 @@ void init()
 
 
   // the ball has 20 faces, subdivided once -
-  //    80 triangles, 320 vec3s
+  //    80 triangles, 240 vec3s
   // the ball's cage has the same number of triangles, but each gets 3 lines,
   // since I'm not doing anything fancy to eliminate duplicates -
   //   5*80 triangles, i.e. 1200 lines, which is 2400 vec3s
@@ -41,10 +47,10 @@ void init()
   // the serpinski action consists of 10 sets of 100 points.
   //    that's just 1000 points.
 
-  //so total you've got 320 + 2400 + 24 + 1000 = 3744 points.
+  //so total you've got 240 + 2400 + 24 + 1000 = 3664 points.
 
-  colors.resize(3744);
-  points.resize(3744);
+  colors.resize(3664);
+  points.resize(3664);
 
 
 
@@ -123,7 +129,7 @@ void init()
 //random number generation
   std::random_device rd;
   std::mt19937 mt(rd());
-  std::uniform_real_distribution<double> dist(1.0, 10.0);
+  std::uniform_real_distribution<double> dist(1.0, 30.0);
   //example usage for random number generation:
   // for (int i=0; i<16; ++i)
   //         std::cout << dist(mt) << "\n";
@@ -154,19 +160,21 @@ void init()
     //a random number which will be used to control the animation.
     //details on what this means are in the vertex shader and the writeup
 
+    temp_col = glm::vec4((tri.p0 + tri.p1 + tri.p2) / 3.0f, dist(mt));
+
 
     //first - made of p0 and the other two edges midpoints.
     p0t = rad_scale * glm::normalize(tri.p0);
     p1t = rad_scale * glm::normalize((tri.p0+tri.p2)/2.0f);
     p2t = rad_scale * glm::normalize((tri.p0+tri.p1)/2.0f);
 
-    temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
+    // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
-    cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
-    cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
-    cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
-    cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
-    cout << endl;
+    // cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
+    // cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
+    // cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
+    // cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
+    // cout << endl;
 
     points[index] = p0t;
     colors[index] = temp_col;
@@ -184,13 +192,13 @@ void init()
     p1t = rad_scale * glm::normalize((tri.p1+tri.p0)/2.0f);
     p2t = rad_scale * glm::normalize((tri.p1+tri.p2)/2.0f);
 
-    temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
+    // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
-    cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
-    cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
-    cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
-    cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
-    cout << endl;
+    // cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
+    // cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
+    // cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
+    // cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
+    // cout << endl;
 
     points[index] = p0t;
     colors[index] = temp_col;
@@ -208,13 +216,13 @@ void init()
     p1t = rad_scale * glm::normalize((tri.p2+tri.p1)/2.0f);
     p2t =  rad_scale * glm::normalize((tri.p2+tri.p0)/2.0f);
 
-    temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
+    // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
-    cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
-    cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
-    cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
-    cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
-    cout << endl;
+    // cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
+    // cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
+    // cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
+    // cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
+    // cout << endl;
 
     points[index] = p0t;
     colors[index] = temp_col;
@@ -232,13 +240,13 @@ void init()
     p1t = rad_scale * glm::normalize((tri.p1+tri.p0)/2.0f);
     p2t = rad_scale * glm::normalize((tri.p1+tri.p2)/2.0f);
 
-    temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
+    // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
-    cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
-    cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
-    cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
-    cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
-    cout << endl;
+    // cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
+    // cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
+    // cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
+    // cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
+    // cout << endl;
 
     points[index] = p0t;
     colors[index] = temp_col;
@@ -357,6 +365,19 @@ void init()
 
 
 
+  //uniform int used to keep track of time
+
+  time_loc = glGetUniformLocation(program, "t");
+  glUniform1i(time_loc, animation_time);
+
+  //orthographic projection matrix so I can handle non-square windows
+
+  proj_loc = glGetUniformLocation(program, "proj");
+  projection = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f);
+  glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+
 
 
 
@@ -380,10 +401,13 @@ void init()
 
 extern "C" void display()
 {
+  animation_time++;
+  glUniform1i(time_loc, animation_time);
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   //draw the ball
-  glDrawArrays(GL_TRIANGLES, 0, 320);
+  glDrawArrays(GL_TRIANGLES, 0, 240); // there are 240 verticies for the 80 tris
 
   //draw the lines around the ball
 
@@ -396,9 +420,21 @@ extern "C" void display()
 
 
   glFlush();
-
-
   glutSwapBuffers();
+  glutPostRedisplay();
+
+}
+
+//----------------------------------------------------------------------------
+
+extern "C" void reshape(int width, int height)
+{
+  // cout << "you reeally resized the shit out of that window" << endl;
+  // projection = glm::ortho();
+
+  glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
+
+  cout << "width is " << width << " and height is " << height << endl;
 
 }
 
@@ -419,7 +455,9 @@ extern "C" void keyboard(unsigned char key, int x, int y)
 int main(int argc, char **argv)
 {
   glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+  glutInitDisplayMode(GLUT_MULTISAMPLE | GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+  // glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH); // no MSAA
+
   glutInitWindowSize(512, 512);
   glutCreateWindow("Spindle");
 
@@ -429,6 +467,7 @@ int main(int argc, char **argv)
 
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);
+  glutReshapeFunc(reshape);
 
   glutMainLoop();
   return(EXIT_SUCCESS);

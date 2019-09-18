@@ -29,16 +29,12 @@ mat4 rotationMatrix(vec3 axis, float angle)
 
 void main()
 {
+
   vec3 rot_axis = vec3(1.0f, 1.0f, 0.0f);
 
-  gl_Position = proj * rotationMatrix(rot_axis, 0.01f * t) * vec4(vPosition, 1.0);
+  
+  gl_Position = rotationMatrix(rot_axis, 0.01f * t) * proj * vec4(vPosition+(((t%50)/5)*0.1*vColor.xyz), 1.0);
 
-  if(abs((11*t % 50) - vColor.a) < 4.0f)
-  {
-    color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-  }
-  else
-  {
-    color = vec4(gl_VertexID/500.0f, gl_VertexID/500.0f, gl_VertexID/500.0f, 1.0f);
-  }
+  color = vec4(gl_VertexID/500.0f, gl_VertexID/500.0f, gl_VertexID/500.0f, 1.0f);
+
 }

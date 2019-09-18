@@ -31,11 +31,14 @@ void main()
 {
   vec3 rot_axis = vec3(1.0f, 1.0f, 0.0f);
 
-  //if(vColor.a < (t % 50))
-    //gl_Position = proj * rotationMatrix(rot_axis, 0.01f * t) * vec4(vPosition, 1.0);
-  //else
-    gl_Position = proj * rotationMatrix(rot_axis, 0.01f * t) * vec4(vPosition+vColor.xyz, 1.0);
+  gl_Position = proj * rotationMatrix(rot_axis, 0.01f * t) * vec4(vPosition, 1.0);
 
-  color = vec4(gl_VertexID/500.0f, gl_VertexID/500.0f, gl_VertexID/500.0f, 1.0f);
-
+  if(abs((11*t % 50) - vColor.a) < 4.0f)
+  {
+    color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+  }
+  else
+  {
+    color = vec4(gl_VertexID/500.0f, gl_VertexID/500.0f, gl_VertexID/500.0f, 1.0f);
+  }
 }

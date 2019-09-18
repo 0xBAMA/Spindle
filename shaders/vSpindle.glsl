@@ -1,3 +1,5 @@
+#version 330
+
 attribute  vec3 vPosition;
 attribute  vec4 vColor;
 varying vec4 color;
@@ -8,11 +10,11 @@ float spin_rot;
 
 void main()
 {
-  vec3 rot_axis = vec3(1.0, 1.0, 1.0);
+  //vec3 rot_axis = vec3(1.0, 1.0, 1.0);
 
 
   gl_Position = vec4(vPosition, 1.0);
-  color = vColor;
+  color = vec4(gl_VertexID/500.0f, gl_VertexID/500.0f, gl_VertexID/500.0f, 1.0f);
 }
 
 

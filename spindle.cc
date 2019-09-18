@@ -5,6 +5,13 @@
 // primitive types.
 
 #include <vector>
+#include <iostream>
+using std::cout;
+using std::endl;
+
+#include <random>
+
+
 
 #include "Angel.h"
 
@@ -39,18 +46,7 @@ void init()
   colors.resize(3744);
   points.resize(3744);
 
-  // Create a vertex array object
-  GLuint vao;
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
 
-  // Create and initialize a buffer object
-  GLuint buffer;
-  glGenBuffers(1, &buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
-
-  // First, we create an empty buffer of the correct size
-  glBufferData(GL_ARRAY_BUFFER, sizeof(points) + sizeof(colors), NULL, GL_STATIC_DRAW);
 
 
 
@@ -79,33 +75,182 @@ void init()
 
   //the faces of this shape are defined as follows:
   //AGE
-    trivec[0].p0 = a; trivec[0].p1 = g; trivec[0].p2 = e;
+    trivec[ 0].p0 = a; trivec[ 0].p1 = g; trivec[ 0].p2 = e;
   //AIE
-    trivec[1].p0 = a; trivec[1].p1 = i; trivec[1].p2 = e;
+    trivec[ 1].p0 = a; trivec[ 1].p1 = i; trivec[ 1].p2 = e;
   //ACI
-    trivec[2].p0 = a; trivec[2].p1 = c; trivec[2].p2 = i;
+    trivec[ 2].p0 = a; trivec[ 2].p1 = c; trivec[ 2].p2 = i;
   //ACK
+    trivec[ 3].p0 = a; trivec[ 3].p1 = c; trivec[ 3].p2 = k;
   //AGK
+    trivec[ 4].p0 = a; trivec[ 4].p1 = g; trivec[ 4].p2 = k;
   //LBG
+    trivec[ 5].p0 = l; trivec[ 5].p1 = b; trivec[ 5].p2 = g;
   //LGK
+    trivec[ 6].p0 = l; trivec[ 6].p1 = g; trivec[ 6].p2 = k;
   //LFK
+    trivec[ 7].p0 = l; trivec[ 7].p1 = f; trivec[ 7].p2 = k;
   //LDF
+    trivec[ 8].p0 = l; trivec[ 8].p1 = d; trivec[ 8].p2 = f;
   //LDB
+    trivec[ 9].p0 = l; trivec[ 9].p1 = d; trivec[ 9].p2 = b;
   //KFC
+    trivec[10].p0 = k; trivec[10].p1 = f; trivec[10].p2 = c;
   //FHC
+    trivec[11].p0 = f; trivec[11].p1 = h; trivec[11].p2 = c;
   //HIC
+    trivec[12].p0 = h; trivec[12].p1 = i; trivec[12].p2 = c;
   //EJI
+    trivec[13].p0 = e; trivec[13].p1 = j; trivec[13].p2 = i;
   //BGE
+    trivec[14].p0 = b; trivec[14].p1 = g; trivec[14].p2 = e;
   //FHD
+    trivec[15].p0 = f; trivec[15].p1 = h; trivec[15].p2 = d;
   //DHJ
+    trivec[16].p0 = d; trivec[16].p1 = h; trivec[16].p2 = j;
   //DBJ
+    trivec[17].p0 = d; trivec[17].p1 = b; trivec[17].p2 = j;
   //BJE
+    trivec[18].p0 = b; trivec[18].p1 = j; trivec[18].p2 = e;
   //HIJ
+    trivec[19].p0 = h; trivec[19].p1 = i; trivec[19].p2 = j;
 
 
 
   //generate the points for the ball
   //these are triangles, making up the faces of an icosahedron
+
+//random number generation
+  std::random_device rd;
+  std::mt19937 mt(rd());
+  std::uniform_real_distribution<double> dist(1.0, 10.0);
+  //example usage for random number generation:
+  // for (int i=0; i<16; ++i)
+  //         std::cout << dist(mt) << "\n";
+
+  glm::vec3 p0t, p1t, p2t; //temporary storage
+  glm::vec4 temp_col;
+
+  float rad_scale = 0.45f; //used to scale the radius
+
+  for(auto tri : trivec)
+  {
+    // cout << tri.p0.x << " " << tri.p0.y << " " << tri.p0.z << endl;
+    // cout << tri.p1.x << " " << tri.p1.y << " " << tri.p1.z << endl;
+    // cout << tri.p2.x << " " << tri.p2.y << " " << tri.p2.z << endl;
+    // cout << endl;
+
+    //each triangle is three points - we are going to want to make it into 4 triangles,
+    //by finding the midpoint of each edge.
+
+    /* i.e.
+         /\                 /\
+        /  \               /__\
+       /    \   becomes   /\  /\
+      /______\           /__\/__\   */
+
+    //the color actually holds the vector to the middle of the triangle - this
+    //stores the value of the normal of the triangle. Also, the alpha channel is
+    //a random number which will be used to control the animation.
+    //details on what this means are in the vertex shader and the writeup
+
+
+    //first - made of p0 and the other two edges midpoints.
+    p0t = rad_scale * glm::normalize(tri.p0);
+    p1t = rad_scale * glm::normalize((tri.p0+tri.p2)/2.0f);
+    p2t = rad_scale * glm::normalize((tri.p0+tri.p1)/2.0f);
+
+    temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
+
+    cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
+    cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
+    cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
+    cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
+    cout << endl;
+
+    points[index] = p0t;
+    colors[index] = temp_col;
+    index++;
+    points[index] = p1t;
+    colors[index] = temp_col;
+    index++;
+    points[index] = p2t;
+    colors[index] = temp_col;
+    index++;
+
+
+    //second - made of p1 and the other two edges midpoints
+    p0t = rad_scale * glm::normalize(tri.p1);
+    p1t = rad_scale * glm::normalize((tri.p1+tri.p0)/2.0f);
+    p2t = rad_scale * glm::normalize((tri.p1+tri.p2)/2.0f);
+
+    temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
+
+    cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
+    cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
+    cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
+    cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
+    cout << endl;
+
+    points[index] = p0t;
+    colors[index] = temp_col;
+    index++;
+    points[index] = p1t;
+    colors[index] = temp_col;
+    index++;
+    points[index] = p2t;
+    colors[index] = temp_col;
+    index++;
+
+
+    //third - made of p2 and the other two edges midpoints
+    p0t = rad_scale * glm::normalize(tri.p2);
+    p1t = rad_scale * glm::normalize((tri.p2+tri.p1)/2.0f);
+    p2t =  rad_scale * glm::normalize((tri.p2+tri.p0)/2.0f);
+
+    temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
+
+    cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
+    cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
+    cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
+    cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
+    cout << endl;
+
+    points[index] = p0t;
+    colors[index] = temp_col;
+    index++;
+    points[index] = p1t;
+    colors[index] = temp_col;
+    index++;
+    points[index] = p2t;
+    colors[index] = temp_col;
+    index++;
+
+
+    //fourth - made of the three edges midpoints
+    p0t = rad_scale * glm::normalize((tri.p2+tri.p0)/2.0f);
+    p1t = rad_scale * glm::normalize((tri.p1+tri.p0)/2.0f);
+    p2t = rad_scale * glm::normalize((tri.p1+tri.p2)/2.0f);
+
+    temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
+
+    cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
+    cout << "p1t: " << p1t.x << " " << p1t.y << " " << p1t.z << endl;
+    cout << "p2t: " << p2t.x << " " << p2t.y << " " << p2t.z << endl;
+    cout << "col: " << temp_col.r << " " << temp_col.g << " " << temp_col.b << " " << temp_col.a << endl;
+    cout << endl;
+
+    points[index] = p0t;
+    colors[index] = temp_col;
+    index++;
+    points[index] = p1t;
+    colors[index] = temp_col;
+    index++;
+    points[index] = p2t;
+    colors[index] = temp_col;
+    index++;
+
+  }
 
 
 
@@ -141,6 +286,26 @@ void init()
 
 
 
+  // Create a vertex array object
+  GLuint vao;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+
+  // Create and initialize a buffer object
+  GLuint buffer;
+  glGenBuffers(1, &buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
+
+  int num_bytes_points = sizeof(glm::vec3) * points.size();
+  int num_bytes_colors = sizeof(glm::vec4) * colors.size();
+
+  cout << " points is " << num_bytes_points << " bytes" << endl;
+  cout << " colors is " << num_bytes_colors << " bytes" << endl;
+
+  // First, we create an empty buffer of the correct size
+  // glBufferData(GL_ARRAY_BUFFER, sizeof(points) + sizeof(colors), NULL, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, num_bytes_points + num_bytes_colors, NULL, GL_STATIC_DRAW);
 
 
   // Next, we load the real data in parts.  We need to specify the
@@ -148,9 +313,14 @@ void init()
   //   data in the buffer.  Conveniently, the byte offset we need is
   //   the same as the size (in bytes) of the points array, which is
   //   returned from "sizeof(points)".
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), points[0]);
-  glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), colors[0]);
 
+
+
+  // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(points), &points[0]);
+  // glBufferSubData(GL_ARRAY_BUFFER, sizeof(points), sizeof(colors), &colors[0]);
+
+  glBufferSubData(GL_ARRAY_BUFFER, 0, num_bytes_points, &points[0]);
+  glBufferSubData(GL_ARRAY_BUFFER, num_bytes_points, num_bytes_colors, &colors[0]);
 
 
 
@@ -200,6 +370,9 @@ void init()
 
   glEnable(GL_DEPTH_TEST);
 
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   glClearColor(1/phi, 1/phi, 1/phi, 1.0); // grey background
 }
 
@@ -208,8 +381,25 @@ void init()
 extern "C" void display()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  // glDrawArrays(GL_TRIANGLES, 0, NumVertices);
+
+  //draw the ball
+  glDrawArrays(GL_TRIANGLES, 0, 320);
+
+  //draw the lines around the ball
+
+  //draw the triangles for the spindle
+
+  //draw the points for the serpinski action
+
+
+
+
+
   glFlush();
+
+
+  glutSwapBuffers();
+
 }
 
 //----------------------------------------------------------------------------
@@ -229,9 +419,9 @@ extern "C" void keyboard(unsigned char key, int x, int y)
 int main(int argc, char **argv)
 {
   glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
   glutInitWindowSize(512, 512);
-  glutCreateWindow("Simple GLSL example");
+  glutCreateWindow("Spindle");
 
   glewInit();
 

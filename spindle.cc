@@ -30,7 +30,7 @@ void init()
 {
 
   std::vector<glm::vec4> colors;    //I'm using alpha
-  std::vector<glm::vec3> points;    //add the 1.0 in the shader
+  std::vector<glm::vec3> points;    //add the 1.0 w value in the shader
 
   int index = 0;
 
@@ -160,13 +160,21 @@ void init()
     //a random number which will be used to control the animation.
     //details on what this means are in the vertex shader and the writeup
 
-    temp_col = glm::vec4((tri.p0 + tri.p1 + tri.p2) / 3.0f, dist(mt));
+
+
+    //old
+    // temp_col = glm::vec4((tri.p0 + tri.p1 + tri.p2) / 3.0f, dist(mt));
 
 
     //first - made of p0 and the other two edges midpoints.
     p0t = rad_scale * glm::normalize(tri.p0);
     p1t = rad_scale * glm::normalize((tri.p0+tri.p2)/2.0f);
     p2t = rad_scale * glm::normalize((tri.p0+tri.p1)/2.0f);
+
+    glm::vec3 temp = glm::cross(p0t-p1t, p1t-p2t);
+    temp = 0.1f * rad_scale * glm::normalize(temp);
+
+    temp_col = glm::vec4(temp, dist(mt));
 
     // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
@@ -192,6 +200,10 @@ void init()
     p1t = rad_scale * glm::normalize((tri.p1+tri.p0)/2.0f);
     p2t = rad_scale * glm::normalize((tri.p1+tri.p2)/2.0f);
 
+    temp = glm::cross(p0t-p1t, p1t-p2t);
+    temp = 0.1f * rad_scale * glm::normalize(temp);
+
+    temp_col = glm::vec4(temp, dist(mt));
     // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
     // cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
@@ -216,6 +228,10 @@ void init()
     p1t = rad_scale * glm::normalize((tri.p2+tri.p1)/2.0f);
     p2t =  rad_scale * glm::normalize((tri.p2+tri.p0)/2.0f);
 
+    temp = glm::cross(p0t-p1t, p1t-p2t);
+    temp = 0.1f * rad_scale * glm::normalize(temp);
+
+    temp_col = glm::vec4(temp, dist(mt));
     // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
     // cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
@@ -240,6 +256,11 @@ void init()
     p1t = rad_scale * glm::normalize((tri.p1+tri.p0)/2.0f);
     p2t = rad_scale * glm::normalize((tri.p1+tri.p2)/2.0f);
 
+
+    temp = glm::cross(p0t-p1t, p1t-p2t);
+    temp = 0.1f * rad_scale * glm::normalize(temp);
+
+    temp_col = glm::vec4(temp, dist(mt));
     // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
     // cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
@@ -429,7 +450,6 @@ extern "C" void display()
 
 extern "C" void reshape(int width, int height)
 {
-  // cout << "you reeally resized the shit out of that window" << endl;
   // projection = glm::ortho();
 
   glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));

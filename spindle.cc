@@ -21,10 +21,22 @@ using std::endl;
 
 
 int animation_time = 0;
-GLint time_loc;
+GLint time_loc_ball;
+GLint time_loc_cage;
+
 
 glm::mat4 projection;
-GLint proj_loc;
+GLint proj_loc_ball;
+GLint proj_loc_cage;
+
+GLuint vPosition_ball;
+GLuint vPosition_cage;
+
+GLuint vColor_ball;
+GLuint vColor_cage;
+
+GLuint ball_program;
+GLuint cage_program;
 
 void init()
 {
@@ -130,7 +142,7 @@ void init()
 //random number generation
   std::random_device rd;
   std::mt19937 mt(rd());
-  std::uniform_real_distribution<double> dist(1.0, 30.0);
+  std::uniform_real_distribution<double> dist(1.0, 90.0);
   //example usage for random number generation:
   // for (int i=0; i<16; ++i)
   //         std::cout << dist(mt) << "\n";
@@ -287,7 +299,143 @@ void init()
 
   //generate the points for the ball's cage
   //these are the outlines of the trianglular faces of the black ball
-  // they are, however, translated outwards, slightly, and there are 5 layered copies
+  // they are, however, translated outwards, slightly, with respect to the
+  // surface of the ball, and there are 5 layered copies
+
+
+  std::uniform_real_distribution<float> dist2(0.1f, 0.9f);
+
+
+  rad_scale = rad_scale * 0.98f; //used to scale the radius
+  temp_col = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+  for (size_t i = 0; i < 5; i++)
+  {
+
+    for(auto tri : trivec)
+    {
+      p0t = rad_scale * glm::normalize(tri.p0);
+      p1t = rad_scale * glm::normalize((tri.p0+tri.p2)/2.0f);
+      p2t = rad_scale * glm::normalize((tri.p0+tri.p1)/2.0f);
+
+
+      points[index] = p0t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p1t;
+      colors[index] = temp_col;
+      index++;
+
+
+      points[index] = p1t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p2t;
+      colors[index] = temp_col;
+      index++;
+
+
+      points[index] = p0t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p2t;
+      colors[index] = temp_col;
+      index++;
+
+      p0t = rad_scale * glm::normalize(tri.p1);
+      p1t = rad_scale * glm::normalize((tri.p1+tri.p0)/2.0f);
+      p2t = rad_scale * glm::normalize((tri.p1+tri.p2)/2.0f);
+
+      points[index] = p0t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p1t;
+      colors[index] = temp_col;
+      index++;
+
+
+      points[index] = p1t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p2t;
+      colors[index] = temp_col;
+      index++;
+
+
+      points[index] = p0t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p2t;
+      colors[index] = temp_col;
+      index++;
+
+      p0t = rad_scale * glm::normalize(tri.p2);
+      p1t = rad_scale * glm::normalize((tri.p2+tri.p1)/2.0f);
+      p2t =  rad_scale * glm::normalize((tri.p2+tri.p0)/2.0f);
+
+      points[index] = p0t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p1t;
+      colors[index] = temp_col;
+      index++;
+
+
+      points[index] = p1t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p2t;
+      colors[index] = temp_col;
+      index++;
+
+
+      points[index] = p0t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p2t;
+      colors[index] = temp_col;
+      index++;
+
+      p0t = rad_scale * glm::normalize((tri.p2+tri.p0)/2.0f);
+      p1t = rad_scale * glm::normalize((tri.p1+tri.p0)/2.0f);
+      p2t = rad_scale * glm::normalize((tri.p1+tri.p2)/2.0f);
+
+      points[index] = p0t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p1t;
+      colors[index] = temp_col;
+      index++;
+
+
+      points[index] = p1t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p2t;
+      colors[index] = temp_col;
+      index++;
+
+
+      points[index] = p0t;
+      colors[index] = temp_col;
+      index++;
+      points[index] = p2t;
+      colors[index] = temp_col;
+      index++;
+
+
+    }
+  temp_col = glm::vec4(dist2(mt), dist2(mt), dist2(mt), 1.0f);
+  rad_scale *= 0.98f;
+  }
+
+
+
+
+
+
+
+
 
 
 
@@ -366,38 +514,64 @@ void init()
 
 
   // Load shaders and use the resulting shader program
-  GLuint program = InitShader("shaders/vSpindle.glsl", "shaders/fSpindle.glsl");
-  glUseProgram(program);
+  cout << "compiling the first set of shaders ...";
+  ball_program = InitShader("shaders/vSphere.glsl", "shaders/fSphere.glsl");
 
+  glUseProgram(ball_program);
 
   // Initialize the vertex position attribute from the vertex shader
-  GLuint vPosition = glGetAttribLocation(program, "vPosition");
-  glEnableVertexAttribArray(vPosition);
-  glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (0)));
+  vPosition_ball = glGetAttribLocation(ball_program, "vPosition");
+  glEnableVertexAttribArray(vPosition_ball);
+  glVertexAttribPointer(vPosition_ball, 3, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (0)));
 
   // Likewise, initialize the vertex color attribute.  Once again, we
   //    need to specify the starting offset (in bytes) for the color
   //    data.  Just like loading the array, we use "sizeof(points)"
   //    to determine the correct value.
-  GLuint vColor = glGetAttribLocation(program, "vColor");
-  glEnableVertexAttribArray(vColor);
-  glVertexAttribPointer(vColor, 4, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (sizeof(points))));
+  vColor_ball = glGetAttribLocation(ball_program, "vColor");
+  glEnableVertexAttribArray(vColor_ball);
+  glVertexAttribPointer(vColor_ball, 4, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (sizeof(points))));
 
+  time_loc_ball = glGetUniformLocation(ball_program, "t");
+  glUniform1i(time_loc_ball, animation_time);
 
-
-
-
-
-  //uniform int used to keep track of time
-
-  time_loc = glGetUniformLocation(program, "t");
-  glUniform1i(time_loc, animation_time);
-
-  //orthographic projection matrix so I can handle non-square windows
-
-  proj_loc = glGetUniformLocation(program, "proj");
+  proj_loc_ball = glGetUniformLocation(ball_program, "proj");
   projection = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f);
-  glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
+  glUniformMatrix4fv(proj_loc_ball, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+  cout << " done" << endl;
+
+
+
+
+
+
+  cout << "compiling the second set of shaders ...";
+  cage_program = InitShader("shaders/vCage.glsl", "shaders/fCage.glsl");
+
+  glUseProgram(cage_program);
+
+
+//DO THE SAME FOR THE SECOND PROGRAM
+  vPosition_cage = glGetAttribLocation(cage_program, "vPosition");
+  glEnableVertexAttribArray(vPosition_cage);
+  glVertexAttribPointer(vPosition_cage, 3, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (0)));
+
+  vColor_cage = glGetAttribLocation(cage_program, "vColor");
+  glEnableVertexAttribArray(vColor_cage);
+  glVertexAttribPointer(vColor_cage, 4, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (sizeof(points))));
+
+  time_loc_cage = glGetUniformLocation(cage_program, "t");
+  glUniform1i(time_loc_cage, animation_time);
+
+  proj_loc_cage = glGetUniformLocation(cage_program, "proj");
+  glUniformMatrix4fv(proj_loc_cage, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+
+
+  cout << " done" << endl;
 
 
 
@@ -417,6 +591,8 @@ void init()
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  glEnable(GL_LINE_SMOOTH);
+
   glClearColor(1/phi, 1/phi, 1/phi, 1.0); // grey background
 }
 
@@ -424,17 +600,56 @@ void init()
 
 extern "C" void display()
 {
-  animation_time++;
-  glUniform1i(time_loc, animation_time);
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+  animation_time++;
+
+
+
   //draw the ball
+  glUseProgram(ball_program);
+  glEnableVertexAttribArray(vPosition_ball);
+  glEnableVertexAttribArray(vColor_ball);
+  glUniform1i(time_loc_ball, animation_time);
+
+
   glDrawArrays(GL_TRIANGLES, 0, 240); // there are 240 verticies for the 80 tris
 
-  //draw the lines around the ball
 
-  //draw the triangles for the spindle
+
+
+
+  //draw the lines around the ball
+  glUseProgram(cage_program);
+  glEnableVertexAttribArray(vPosition_cage);
+  glEnableVertexAttribArray(vColor_cage);
+  glUniform1i(time_loc_cage, animation_time);
+
+
+
+  //there are 80 triangles, each have 3 sides
+  //with this information, we can derive that there are 240 lines per layer, 480 points
+  glLineWidth(4.0f);
+  glDrawArrays(GL_LINES, 240, 480);
+
+  glLineWidth(3.0f);
+  glDrawArrays(GL_LINES, 480, 720);
+
+  glLineWidth(2.0f);
+  glDrawArrays(GL_LINES, 720, 960);
+
+  glLineWidth(1.0f);
+  glDrawArrays(GL_LINES, 960, 1200);
+
+
+
+
+
+
+
+
 
   //draw the points for the serpinski action
 
@@ -454,7 +669,8 @@ extern "C" void reshape(int width, int height)
 {
   // projection = glm::ortho();
 
-  glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
+  glUniformMatrix4fv(proj_loc_ball, 1, GL_FALSE, glm::value_ptr(projection));
+  glUniformMatrix4fv(proj_loc_cage, 1, GL_FALSE, glm::value_ptr(projection));
 
   cout << "width is " << width << " and height is " << height << endl;
 
@@ -480,7 +696,7 @@ int main(int argc, char **argv)
   glutInitDisplayMode(GLUT_MULTISAMPLE | GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
   // glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH); // no MSAA
 
-  glutInitWindowSize(512, 512);
+  glutInitWindowSize(800, 800);
   glutCreateWindow("Spindle");
 
   glewInit();
@@ -489,7 +705,7 @@ int main(int argc, char **argv)
 
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);
-  glutReshapeFunc(reshape);
+  // glutReshapeFunc(reshape);
 
   glutMainLoop();
   return(EXIT_SUCCESS);

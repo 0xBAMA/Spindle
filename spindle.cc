@@ -73,6 +73,7 @@ void init()
 
   typedef struct tri_t{
     glm::vec3 p0, p1, p2;
+    glm::vec3 norm;
   } triangle;
 
   std::vector<triangle> trivec;
@@ -81,45 +82,45 @@ void init()
 
   //the faces of this shape are defined as follows:
   //AGE
-    trivec[ 0].p0 = a; trivec[ 0].p1 = g; trivec[ 0].p2 = e;
+    trivec[ 0].p0 = a; trivec[ 0].p1 = g; trivec[ 0].p2 = e; trivec[ 0].norm = glm::cross(a-g,g-e);
   //AIE
-    trivec[ 1].p0 = a; trivec[ 1].p1 = i; trivec[ 1].p2 = e;
+    trivec[ 1].p0 = a; trivec[ 1].p1 = i; trivec[ 1].p2 = e; trivec[ 1].norm = glm::cross(a-i,i-e);
   //ACI
-    trivec[ 2].p0 = a; trivec[ 2].p1 = c; trivec[ 2].p2 = i;
+    trivec[ 2].p0 = a; trivec[ 2].p1 = c; trivec[ 2].p2 = i; trivec[ 2].norm = glm::cross(a-c,c-i);
   //ACK
-    trivec[ 3].p0 = a; trivec[ 3].p1 = c; trivec[ 3].p2 = k;
+    trivec[ 3].p0 = a; trivec[ 3].p1 = c; trivec[ 3].p2 = k; trivec[ 3].norm = glm::cross(a-c,c-k);
   //AGK
-    trivec[ 4].p0 = a; trivec[ 4].p1 = g; trivec[ 4].p2 = k;
+    trivec[ 4].p0 = a; trivec[ 4].p1 = g; trivec[ 4].p2 = k; trivec[ 4].norm = glm::cross(a-g,g-k);
   //LBG
-    trivec[ 5].p0 = l; trivec[ 5].p1 = b; trivec[ 5].p2 = g;
+    trivec[ 5].p0 = l; trivec[ 5].p1 = b; trivec[ 5].p2 = g; trivec[ 5].norm = glm::cross(l-b,b-g);
   //LGK
-    trivec[ 6].p0 = l; trivec[ 6].p1 = g; trivec[ 6].p2 = k;
+    trivec[ 6].p0 = l; trivec[ 6].p1 = g; trivec[ 6].p2 = k; trivec[ 6].norm = glm::cross(l-g,g-k);
   //LFK
-    trivec[ 7].p0 = l; trivec[ 7].p1 = f; trivec[ 7].p2 = k;
+    trivec[ 7].p0 = l; trivec[ 7].p1 = f; trivec[ 7].p2 = k; trivec[ 7].norm = glm::cross(l-f,f-k);
   //LDF
-    trivec[ 8].p0 = l; trivec[ 8].p1 = d; trivec[ 8].p2 = f;
+    trivec[ 8].p0 = l; trivec[ 8].p1 = d; trivec[ 8].p2 = f; trivec[ 8].norm = glm::cross(l-d,d-f);
   //LDB
-    trivec[ 9].p0 = l; trivec[ 9].p1 = d; trivec[ 9].p2 = b;
+    trivec[ 9].p0 = l; trivec[ 9].p1 = d; trivec[ 9].p2 = b; trivec[ 9].norm = glm::cross(l-d,d-b);
   //KFC
-    trivec[10].p0 = k; trivec[10].p1 = f; trivec[10].p2 = c;
+    trivec[10].p0 = k; trivec[10].p1 = f; trivec[10].p2 = c; trivec[10].norm = glm::cross(k-f,f-c);
   //FHC
-    trivec[11].p0 = f; trivec[11].p1 = h; trivec[11].p2 = c;
+    trivec[11].p0 = f; trivec[11].p1 = h; trivec[11].p2 = c; trivec[11].norm = glm::cross(f-h,h-c);
   //HIC
-    trivec[12].p0 = h; trivec[12].p1 = i; trivec[12].p2 = c;
+    trivec[12].p0 = h; trivec[12].p1 = i; trivec[12].p2 = c; trivec[12].norm = glm::cross(h-i,i-c);
   //EJI
-    trivec[13].p0 = e; trivec[13].p1 = j; trivec[13].p2 = i;
+    trivec[13].p0 = e; trivec[13].p1 = j; trivec[13].p2 = i; trivec[13].norm = glm::cross(e-j,j-i);
   //BGE
-    trivec[14].p0 = b; trivec[14].p1 = g; trivec[14].p2 = e;
+    trivec[14].p0 = b; trivec[14].p1 = g; trivec[14].p2 = e; trivec[14].norm = glm::cross(b-g,g-e);
   //FHD
-    trivec[15].p0 = f; trivec[15].p1 = h; trivec[15].p2 = d;
+    trivec[15].p0 = f; trivec[15].p1 = h; trivec[15].p2 = d; trivec[15].norm = glm::cross(f-h,h-d);
   //DHJ
-    trivec[16].p0 = d; trivec[16].p1 = h; trivec[16].p2 = j;
+    trivec[16].p0 = d; trivec[16].p1 = h; trivec[16].p2 = j; trivec[16].norm = glm::cross(d-h,h-j);
   //DBJ
-    trivec[17].p0 = d; trivec[17].p1 = b; trivec[17].p2 = j;
+    trivec[17].p0 = d; trivec[17].p1 = b; trivec[17].p2 = j; trivec[17].norm = glm::cross(d-b,b-j);
   //BJE
-    trivec[18].p0 = b; trivec[18].p1 = j; trivec[18].p2 = e;
+    trivec[18].p0 = b; trivec[18].p1 = j; trivec[18].p2 = e; trivec[18].norm = glm::cross(b-j,j-e);
   //HIJ
-    trivec[19].p0 = h; trivec[19].p1 = i; trivec[19].p2 = j;
+    trivec[19].p0 = h; trivec[19].p1 = i; trivec[19].p2 = j; trivec[19].norm = glm::cross(h-i,i-j);
 
 
 
@@ -134,7 +135,7 @@ void init()
   // for (int i=0; i<16; ++i)
   //         std::cout << dist(mt) << "\n";
 
-  glm::vec3 p0t, p1t, p2t; //temporary storage
+  glm::vec3 p0t, p1t, p2t, nt; //temporary storage
   glm::vec4 temp_col;
 
   float rad_scale = 0.45f; //used to scale the radius
@@ -170,11 +171,9 @@ void init()
     p0t = rad_scale * glm::normalize(tri.p0);
     p1t = rad_scale * glm::normalize((tri.p0+tri.p2)/2.0f);
     p2t = rad_scale * glm::normalize((tri.p0+tri.p1)/2.0f);
+    nt = rad_scale * glm::normalize(tri.norm);
 
-    glm::vec3 temp = glm::cross(p0t-p1t, p1t-p2t);
-    temp = 0.1f * rad_scale * glm::normalize(temp);
-
-    temp_col = glm::vec4(temp, dist(mt));
+    temp_col = glm::vec4(nt, dist(mt));
 
     // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
@@ -188,9 +187,11 @@ void init()
     colors[index] = temp_col;
     index++;
     points[index] = p1t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
     points[index] = p2t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
 
@@ -199,11 +200,11 @@ void init()
     p0t = rad_scale * glm::normalize(tri.p1);
     p1t = rad_scale * glm::normalize((tri.p1+tri.p0)/2.0f);
     p2t = rad_scale * glm::normalize((tri.p1+tri.p2)/2.0f);
-
-    temp = glm::cross(p0t-p1t, p1t-p2t);
-    temp = 0.1f * rad_scale * glm::normalize(temp);
-
-    temp_col = glm::vec4(temp, dist(mt));
+    //
+    // temp = glm::cross(p0t-p1t, p1t-p2t);
+    // temp = 0.1f * rad_scale * glm::normalize(temp);
+    //
+    // temp_col = glm::vec4(temp, dist(mt));
     // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
     // cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
@@ -213,12 +214,15 @@ void init()
     // cout << endl;
 
     points[index] = p0t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
     points[index] = p1t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
     points[index] = p2t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
 
@@ -228,10 +232,7 @@ void init()
     p1t = rad_scale * glm::normalize((tri.p2+tri.p1)/2.0f);
     p2t =  rad_scale * glm::normalize((tri.p2+tri.p0)/2.0f);
 
-    temp = glm::cross(p0t-p1t, p1t-p2t);
-    temp = 0.1f * rad_scale * glm::normalize(temp);
 
-    temp_col = glm::vec4(temp, dist(mt));
     // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
     // cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
@@ -241,12 +242,15 @@ void init()
     // cout << endl;
 
     points[index] = p0t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
     points[index] = p1t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
     points[index] = p2t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
 
@@ -256,11 +260,6 @@ void init()
     p1t = rad_scale * glm::normalize((tri.p1+tri.p0)/2.0f);
     p2t = rad_scale * glm::normalize((tri.p1+tri.p2)/2.0f);
 
-
-    temp = glm::cross(p0t-p1t, p1t-p2t);
-    temp = 0.1f * rad_scale * glm::normalize(temp);
-
-    temp_col = glm::vec4(temp, dist(mt));
     // temp_col = glm::vec4((p0t + p1t + p2t)/3.0f, dist(mt));  //center point and a random number
 
     // cout << "p0t: " << p0t.x << " " << p0t.y << " " << p0t.z << endl;
@@ -270,12 +269,15 @@ void init()
     // cout << endl;
 
     points[index] = p0t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
     points[index] = p1t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
     points[index] = p2t;
+    temp_col = glm::vec4(nt, dist(mt));
     colors[index] = temp_col;
     index++;
 

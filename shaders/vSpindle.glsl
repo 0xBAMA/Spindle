@@ -51,9 +51,14 @@ void main()
 
   if(abs(local_t - loc) < 30) //for values of t between 30 and 60
     scale = 0.003 * abs(local_t - loc);
+    //scale = 0.003 * abs(local_t - loc) + 1.0f;
+
 
   //vColor.xyz is the displacement vector - add it to the position before rotation
   vec3 vPosition_local = (scale * vColor.rgb) + vPosition;
+
+
+  //vec3 vPosition_local = scale * vPosition - vColor.rgb;
 
 
 
@@ -61,6 +66,7 @@ void main()
 
 
   //color = vec4(gl_VertexID/500.0f + 0.3f, gl_VertexID/500.0f + 0.32f, gl_VertexID/500.0f + 0.3f, 1.0f);
+
   color = vec4(vColor.a/40.0f + 0.3f, vColor.a/40.0f + 0.32f, vColor.a/40.0f + 0.3f, 1.0f);
 
 }

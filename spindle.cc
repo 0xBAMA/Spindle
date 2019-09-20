@@ -4,20 +4,7 @@
 // these are drawn as three separate pices, as they are defined using different
 // primitive types.
 
-#include <vector>
-#include <iostream>
-using std::cout;
-using std::endl;
 
-#include <random>
-
-
-
-#include "Angel.h"
-
-#include "glm/glm.hpp" //general vector types
-#include "glm/gtc/matrix_transform.hpp" // for glm::ortho
-#include "glm/gtc/type_ptr.hpp" //to send matricies gpu-side
 
 
 int animation_time = 0;

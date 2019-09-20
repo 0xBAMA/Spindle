@@ -669,8 +669,8 @@ void CageModel::generate_points()
       {
         switch(i)
         {
-          case 0: //first pass  - like a white
-            colors.push_back(glm::vec3(0.9f + dist2(mt), 0.9f + dist2(mt), 0.9f + dist2(mt)));
+          case 0: //first pass  - like a grey blue
+            colors.push_back(glm::vec3(0.5f + dist2(mt), 0.5f + dist2(mt), 0.9f + dist2(mt)));
             break;
           case 1: //second pass - similar to the background
             colors.push_back(glm::vec3((1/phi) + dist2(mt), (1/phi) + dist2(mt), (1/phi) + dist2(mt)));
@@ -849,7 +849,7 @@ void SerpinskiModel::generate_points()
 {
   //GENERATING GEOMETRY
 
-  float scale = 0.35f;
+  float scale = 0.25f;
 
   //INITIAL VERTICIES
   glm::vec3 initial_verticies[4] = { scale * glm::vec3(1.0f, 1.0f, 1.0f),
@@ -858,9 +858,9 @@ void SerpinskiModel::generate_points()
     scale * glm::vec3( 1.0f, -1.0f, -1.0f)
   };
 
-  points.push_back(glm::vec3(0.25f, 0.5f, 0.5f));   //initial point
+  points.push_back(glm::vec3(0.15f, 0.15f, 0.15f));   //initial point
 
-  for(int i = 1; i < 1001; i++)
+  for(int i = 1; i < 10001; i++)
   {
     int j = rand() % 4; //pick a random vertex
 
@@ -868,4 +868,33 @@ void SerpinskiModel::generate_points()
     points.push_back((points[i-1] + initial_verticies[j]) / 2.0f);
   }
 
+}
+
+
+
+
+  //****************************************************************************
+  //  Function: SerpinskiModel::display()
+  //
+  //  Purpose:
+  //    This function does all the setup for the buffers and uniforms and then
+  //    issues a draw call for the geometry representing this object
+  //****************************************************************************
+
+void SerpinskiModel::display()
+{
+  glBindVertexArray(vao);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glUseProgram(shader_program);
+
+  glEnableVertexAttribArray(vPosition);
+
+  glUniform1i(uTime, time);
+  glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
+
+  //there are 80 triangles, each have 3 sides
+  //with this information, we can derive that there are 240 lines per layer, 480 points
+
+  glPointSize(1.5f);
+  glDrawArrays(GL_POINTS, 0, 10000);
 }

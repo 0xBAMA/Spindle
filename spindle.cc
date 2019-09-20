@@ -23,7 +23,7 @@ void init()
 {
   ball = new BallModel();
   cage = new CageModel();
-  // serp = new SerpinskiModel();
+  serp = new SerpinskiModel();
 
   glEnable(GL_DEPTH_TEST);
 
@@ -32,8 +32,9 @@ void init()
 
   glEnable(GL_LINE_SMOOTH);
 
-  double phi = (1 + std::sqrt(5.0))/2.0;  //golden ratio, used to compute icosahedron
-  glClearColor(1/phi, 1/phi, 1/phi, 1.0); // grey background
+  // double phi = (1 + std::sqrt(5.0))/2.0;  //golden ratio, used to compute icosahedron
+  // glClearColor(1/phi, 1/phi, 1/phi, 1.0); // grey background
+  glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 }
 
 //----------------------------------------------------------------------------
@@ -47,62 +48,11 @@ extern "C" void display()
 
   ball->set_time(animation_time);
   cage->set_time(animation_time);
-  // serp->set_time(animation_time);
+  serp->set_time(animation_time);
 
   ball->display();
   cage->display();
-  // serp->display();
-
-
-
-  // //draw the ball
-  // glUseProgram(ball_program);
-  // glEnableVertexAttribArray(vPosition_ball);
-  // glEnableVertexAttribArray(vColor_ball);
-  // glUniform1i(time_loc_ball, animation_time);
-  //
-  //
-  // glDrawArrays(GL_TRIANGLES, 0, 240); // there are 240 verticies for the 80 tris
-  //
-  //
-  //
-  //
-  //
-  // //draw the lines around the ball
-  // glUseProgram(cage_program);
-  // glEnableVertexAttribArray(vPosition_cage);
-  // glEnableVertexAttribArray(vColor_cage);
-  // glUniform1i(time_loc_cage, animation_time);
-  //
-  //
-  //
-  // //there are 80 triangles, each have 3 sides
-  // //with this information, we can derive that there are 240 lines per layer, 480 points
-  // glLineWidth(4.0f);
-  // glDrawArrays(GL_LINES, 240, 480);
-  //
-  // glLineWidth(3.0f);
-  // glDrawArrays(GL_LINES, 480, 720);
-  //
-  // glLineWidth(2.0f);
-  // glDrawArrays(GL_LINES, 720, 960);
-  //
-  // glLineWidth(1.0f);
-  // glDrawArrays(GL_LINES, 960, 1200);
-  //
-
-
-
-
-
-
-
-
-  //draw the points for the serpinski action
-
-
-
-
+  serp->display();
 
   glFlush();
   glutSwapBuffers();

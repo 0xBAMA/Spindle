@@ -38,7 +38,7 @@ void main()
 
 
 
-  float scale = 0.055 * sin(0.05*t);
+  float scale = 0.075 * sin(0.005*t) + 0.088;
 
 
   //vColor.xyz is the displacement vector - add it to the position before rotation
@@ -49,6 +49,6 @@ void main()
 
   //color = vec4(gl_VertexID/500.0f + 0.3f, gl_VertexID/500.0f + 0.32f, gl_VertexID/500.0f + 0.3f, 1.0f);
 
-  color = vec4(vColor, 0.3f);
+  color = vec4(vColor, 1.0f);
 
 }

@@ -860,7 +860,7 @@ void SerpinskiModel::generate_points()
 
   points.push_back(glm::vec3(0.15f, 0.15f, 0.15f));   //initial point
 
-  for(int i = 1; i < 10001; i++)
+  for(int i = 1; i < 20001; i++)
   {
     int j = rand() % 4; //pick a random vertex
 
@@ -895,6 +895,6 @@ void SerpinskiModel::display()
   //there are 80 triangles, each have 3 sides
   //with this information, we can derive that there are 240 lines per layer, 480 points
 
-  glPointSize(1.5f);
-  glDrawArrays(GL_POINTS, 0, 10000);
+  glPointSize(1.25f);
+  glDrawArrays(GL_POINTS, 0, 20000);
 }

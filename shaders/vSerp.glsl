@@ -32,7 +32,7 @@ void main()
 
   gl_Position = (rotationMatrix(rot_axis, 0.00075f * t) * proj * vec4(vPosition_local, 1.0f));
 
-  if(gl_VertexID < (t % 10000))
+  if(gl_VertexID < (t % 20000))
     color = vec4(1.0f, 0.75f, 0.3 * sin(0.01*t), 1.0f);
   else
     color = vec4(0.0f, 0.0f, 0.0f, 1.0f);

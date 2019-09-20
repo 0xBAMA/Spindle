@@ -115,19 +115,19 @@ public:
   void set_proj(glm::mat4 pin) {proj = pin;}
 
 private:
-  GLint vao;
-  GLint buffer;
+  GLuint vao;
+  GLuint buffer;
 
-  GLint shader_program;
+  GLuint shader_program;
 
 //VERTEX ATTRIB LOCATIONS
-  GLint vPosition;
-  GLint vColor;
-  GLint vNormal;
+  GLuint vPosition;
+  GLuint vNormal;
+  GLuint vColor;
 
 //UNIFORM LOCATIONS
-  GLint uTime;
-  GLint uProj;
+  GLuint uTime;
+  GLuint uProj;
 
 //VALUES OF THOSE UNIFORMS
   int time;
@@ -136,8 +136,8 @@ private:
   void generate_points();
 
   std::vector<glm::vec3> points;    //add the 1.0 w value in the shader
-  std::vector<glm::vec3> colors;
   std::vector<glm::vec3> normals;
+  std::vector<glm::vec3> colors;
 };
 
   //****************************************************************************
@@ -150,6 +150,7 @@ private:
 
 BallModel::BallModel()
 {
+
   //initialize all the vectors
   points.clear();
   colors.clear();
@@ -161,14 +162,50 @@ BallModel::BallModel()
 
 //SETTING UP GPU STUFF
   //VAO
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
 
   //BUFFER, SEND DATA
+  glGenBuffers(1, &buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
+  int num_bytes_points = sizeof(glm::vec3) * points.size();
+  int num_bytes_normals = sizeof(glm::vec3) * normals.size();
+  int num_bytes_colors = sizeof(glm::vec3) * colors.size();
+
+  glBufferData(GL_ARRAY_BUFFER, num_bytes_points + num_bytes_normals + num_bytes_colors, NULL, GL_STATIC_DRAW);
+
+  glBufferSubData(GL_ARRAY_BUFFER, 0, num_bytes_points, &points[0]);
+  glBufferSubData(GL_ARRAY_BUFFER, num_bytes_points, num_bytes_normals, &normals[0]);
+  glBufferSubData(GL_ARRAY_BUFFER, num_bytes_points + num_bytes_normals, num_bytes_colors, &colors[0]);
 
   //SHADERS (COMPILE, USE)
+  shader_program = InitShader("shaders/vSphere.glsl", "shaders/fSphere.glsl");
+
+  glUseProgram(shader_program);
 
   //VERTEX ATTRIB AND UNIFORM LOCATIONS
 
+  // Initialize the vertex position attribute from the vertex shader
+  vPosition = glGetAttribLocation(shader_program, "vPosition");
+  glEnableVertexAttribArray(vPosition);
+  glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (0)));
 
+  vNormal = glGetAttribLocation(shader_program, "vNormal");
+  glEnableVertexAttribArray(vNormal);
+  glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (sizeof(glm::vec3) * points.size())));
+
+  vColor = glGetAttribLocation(shader_program, "vColor");
+  glEnableVertexAttribArray(vColor);
+  glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (sizeof(glm::vec3) * (points.size() + normals.size()))));
+
+
+  uTime = glGetUniformLocation(shader_program, "t");
+  glUniform1i(uTime, time);
+
+  uProj = glGetUniformLocation(shader_program, "proj");
+  proj = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f);
+  glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
 
 }
 
@@ -228,7 +265,7 @@ void BallModel::generate_points()
     for (int i = 0; i < 20; i++)
     {
       //is the origin 'under' the plane containing the triangle? if not, correct
-      trivec[i].norm = planetest(trivec[i].p0, trivec[i].norm, ) ? trivec[i].norm : (-1.0f * trivec[i].norm);
+      trivec[i].norm = planetest(trivec[i].p0, trivec[i].norm, glm::vec3(0.0f, 0.0f, 0.0f)) ? trivec[i].norm : (-1.0f * trivec[i].norm);
     }
 
 
@@ -335,6 +372,32 @@ void BallModel::generate_points()
     }
 }
 
+
+
+  //****************************************************************************
+  //  Function: BallModel::display()
+  //
+  //  Purpose:
+  //    This function does all the setup for the buffers and uniforms and then
+  //    issues a draw call for the geometry representing this object
+  //****************************************************************************
+
+void BallModel::display()
+{
+  glBindVertexArray(vao);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glUseProgram(shader_program);
+
+  glEnableVertexAttribArray(vPosition);
+  glEnableVertexAttribArray(vNormal);
+  glEnableVertexAttribArray(vColor);
+
+  glUniform1i(uTime, time);
+  glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
+
+  glDrawArrays(GL_TRIANGLES, 0, 240); // there are 240 verticies for the 80 tris
+}
+
 //******************************************************************************
 //  Class: CageModel
 //
@@ -373,19 +436,19 @@ public:
   void set_proj(glm::mat4 pin) {proj = pin;}
 
 private:
-  GLint vao;
-  GLint buffer;
+  GLuint vao;
+  GLuint buffer;
 
-  GLint shader_program;
+  GLuint shader_program;
 
 //VERTEX ATTRIB LOCATIONS
-  GLint vPosition;
-  GLint vColor;
-  GLint vNormal;
+  GLuint vPosition;
+  GLuint vColor;
+  GLuint vNormal;
 
 //UNIFORM LOCATIONS
-  GLint uTime;
-  GLint uProj;
+  GLuint uTime;
+  GLuint uProj;
 
 //VALUES OF THOSE UNIFORMS
   int time;
@@ -395,7 +458,7 @@ private:
 
   std::vector<glm::vec3> points;    //add the 1.0 w value in the shader
   std::vector<glm::vec3> colors;
-}
+};
 
 
 
@@ -417,15 +480,46 @@ CageModel::CageModel()
   generate_points();
 
 
-//SETTING UP GPU STUFF
-  //VAO
+  //SETTING UP GPU STUFF
+    //VAO
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
 
-  //BUFFER, SEND DATA
+    //BUFFER, SEND DATA
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
-  //SHADERS (COMPILE, USE)
+    int num_bytes_points = sizeof(glm::vec3) * points.size();
+    int num_bytes_colors = sizeof(glm::vec3) * colors.size();
 
-  //VERTEX ATTRIB AND UNIFORM LOCATIONS
+    glBufferData(GL_ARRAY_BUFFER, num_bytes_points + num_bytes_colors, NULL, GL_STATIC_DRAW);
 
+    glBufferSubData(GL_ARRAY_BUFFER, 0, num_bytes_points, &points[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, num_bytes_points, num_bytes_colors, &colors[0]);
+
+    //SHADERS (COMPILE, USE)
+    shader_program = InitShader("shaders/vCage.glsl", "shaders/fCage.glsl");
+
+    glUseProgram(shader_program);
+
+    //VERTEX ATTRIB AND UNIFORM LOCATIONS
+
+    // Initialize the vertex position attribute from the vertex shader
+    vPosition = glGetAttribLocation(shader_program, "vPosition");
+    glEnableVertexAttribArray(vPosition);
+    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (0)));
+
+    vColor = glGetAttribLocation(shader_program, "vColor");
+    glEnableVertexAttribArray(vColor);
+    glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (sizeof(glm::vec3) * points.size())));
+
+
+    uTime = glGetUniformLocation(shader_program, "t");
+    glUniform1i(uTime, time);
+
+    uProj = glGetUniformLocation(shader_program, "proj");
+    proj = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f);
+    glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
 
 
 }
@@ -566,16 +660,17 @@ void CageModel::generate_points()
 
         points.push_back(p0t);
         points.push_back(p2t);
+
       }
 
 
       // colors
-      for(int j = 0; j < 20; j++)
+      for(int j = 0; j < 480; j++)
       {
         switch(i)
         {
           case 0: //first pass  - like a white
-            colors.push_back(glm::vec3(1.0f + dist2(mt), 1.0f + dist2(mt), 1.0f + dist2(mt)));
+            colors.push_back(glm::vec3(0.9f + dist2(mt), 0.9f + dist2(mt), 0.9f + dist2(mt)));
             break;
           case 1: //second pass - similar to the background
             colors.push_back(glm::vec3((1/phi) + dist2(mt), (1/phi) + dist2(mt), (1/phi) + dist2(mt)));
@@ -587,6 +682,42 @@ void CageModel::generate_points()
       }
     }
 }
+
+
+  //****************************************************************************
+  //  Function: CageModel::display()
+  //
+  //  Purpose:
+  //    This function does all the setup for the buffers and uniforms and then
+  //    issues a draw call for the geometry representing this object
+  //****************************************************************************
+
+void CageModel::display()
+{
+  glBindVertexArray(vao);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glUseProgram(shader_program);
+
+  glEnableVertexAttribArray(vPosition);
+  glEnableVertexAttribArray(vColor);
+
+  glUniform1i(uTime, time);
+  glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
+
+  //there are 80 triangles, each have 3 sides
+  //with this information, we can derive that there are 240 lines per layer, 480 points
+
+  glLineWidth(4.0f);
+  glDrawArrays(GL_LINES, 0, 480);
+
+  glLineWidth(2.0f);
+  glDrawArrays(GL_LINES, 480, 640);
+
+  glLineWidth(1.0f);
+  glDrawArrays(GL_LINES, 640, 800); //I'm doing something wrong here, it should be 3*480=1440
+
+}
+
 
 
 //******************************************************************************
@@ -628,19 +759,19 @@ public:
 
 
 private:
-  GLint vao;
-  GLint buffer;
+  GLuint vao;
+  GLuint buffer;
 
-  GLint shader_program;
+  GLuint shader_program;
 
 //VERTEX ATTRIB LOCATIONS
-  GLint vPosition;
-  GLint vColor;
-  GLint vNormal;
+  GLuint vPosition;
+  GLuint vColor;
+  GLuint vNormal;
 
 //UNIFORM LOCATIONS
-  GLint uTime;
-  GLint uProj;
+  GLuint uTime;
+  GLuint uProj;
 
 //VALUES OF THOSE UNIFORMS
   int time;
@@ -649,7 +780,7 @@ private:
   void generate_points();
 
   std::vector<glm::vec3> points;    //add the 1.0 w value in the shader
-}
+};
 
 
 
@@ -670,15 +801,39 @@ SerpinskiModel::SerpinskiModel()
   generate_points();
 
 
-//SETTING UP GPU STUFF
-  //VAO
+  //SETTING UP GPU STUFF
+    //VAO
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
 
-  //BUFFER, SEND DATA
+    //BUFFER, SEND DATA
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
-  //SHADERS (COMPILE, USE)
+    int num_bytes_points = sizeof(glm::vec3) * points.size();
 
-  //VERTEX ATTRIB AND UNIFORM LOCATIONS
+    glBufferData(GL_ARRAY_BUFFER, num_bytes_points, NULL, GL_STATIC_DRAW);
 
+    glBufferSubData(GL_ARRAY_BUFFER, 0, num_bytes_points, &points[0]);
+
+    //SHADERS (COMPILE, USE)
+    shader_program = InitShader("shaders/vSerp.glsl", "shaders/fSerp.glsl");
+
+    glUseProgram(shader_program);
+
+    //VERTEX ATTRIB AND UNIFORM LOCATIONS
+
+    // Initialize the vertex position attribute from the vertex shader
+    vPosition = glGetAttribLocation(shader_program, "vPosition");
+    glEnableVertexAttribArray(vPosition);
+    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, ((GLvoid*) (0)));
+
+    uTime = glGetUniformLocation(shader_program, "t");
+    glUniform1i(uTime, time);
+
+    uProj = glGetUniformLocation(shader_program, "proj");
+    proj = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f);
+    glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
 
 
 }

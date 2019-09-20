@@ -1,7 +1,8 @@
 #version 330
 
 in  vec3 vPosition;
-in  vec4 vColor;
+in  vec3 vNormal;
+in  vec3 vColor;
 out vec4 color;
 
 uniform int t;
@@ -37,37 +38,17 @@ void main()
 
 
 
-
-
-  //where are we in the animation?
-  float loc = vColor.a;
-
-  //t is going to repeat every 200 units of time
-  float local_t = (t % 200);
-
-  //what does this mean for the animation?
-
-  float scale;
-
-  if(abs(local_t - loc) < 90) //for values of t between 90 and 180
-    scale = 0.0055 * abs(local_t - loc);
+  float scale = 0.055 * sin(0.05*t);
 
 
   //vColor.xyz is the displacement vector - add it to the position before rotation
-  vec3 vPosition_local = (scale * vColor.rgb) + vPosition;
+  vec3 vPosition_local = (scale * vNormal) + vPosition;
 
-
-
-
-
-  if(abs(local_t - loc) > 90)
-    gl_Position = rotationMatrix(rot_axis, 0.0075f * t) * proj * vec4(vPosition, 1.0f);
-  else
-    gl_Position = rotationMatrix(rot_axis, 0.0075f * t) * proj * vec4(vPosition_local, 1.0f);
+  gl_Position = rotationMatrix(rot_axis, 0.0075f * t) * proj * vec4(vPosition_local, 1.0f);
 
 
   //color = vec4(gl_VertexID/500.0f + 0.3f, gl_VertexID/500.0f + 0.32f, gl_VertexID/500.0f + 0.3f, 1.0f);
 
-  color = vec4(vColor.x/40.0f + 0.3f, vColor.a/40.0f + 0.32f, vColor.a/40.0f + 0.3f, 1.0f);
+  color = vec4(vColor, 0.3f);
 
 }

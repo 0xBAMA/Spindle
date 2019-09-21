@@ -8,7 +8,6 @@ out vec4 color;
 uniform int t;
 uniform mat4 proj;
 
-
 float ball_rot;
 float spin_rot;
 
@@ -33,21 +32,11 @@ void main()
 
   vec3 rot_axis = vec3(1.0f, 1.0f, 0.0f);
 
-
-  //gl_Position = rotationMatrix(rot_axis, 0.01f * t) * proj * vec4(vPosition+(((t%50)/5)*0.1*vColor.xyz), 1.0);
-
-
-
   float scale = 0.075 * sin(0.005*t) + 0.088;
 
-
-  //vColor.xyz is the displacement vector - add it to the position before rotation
   vec3 vPosition_local = (scale * vNormal) + vPosition;
 
   gl_Position = rotationMatrix(rot_axis, 0.0075f * t) * proj * vec4(vPosition_local, 1.0f);
-
-
-  //color = vec4(gl_VertexID/500.0f + 0.3f, gl_VertexID/500.0f + 0.32f, gl_VertexID/500.0f + 0.3f, 1.0f);
 
   color = vec4(vColor, 1.0f);
 

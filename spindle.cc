@@ -34,6 +34,7 @@ void init()
 
   // double phi = (1 + std::sqrt(5.0))/2.0;  //golden ratio, used to compute icosahedron
   // glClearColor(1/phi, 1/phi, 1/phi, 1.0); // grey background
+
   glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 }
 
@@ -61,7 +62,7 @@ extern "C" void display()
 }
 
 //----------------------------------------------------------------------------
-//
+
 // extern "C" void reshape(int width, int height)
 // {
 //   // projection = glm::ortho();
@@ -92,6 +93,10 @@ int main(int argc, char **argv)
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_MULTISAMPLE | GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
   // glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH); // no MSAA
+
+
+  glutInitContextVersion( 4, 5 );
+	glutInitContextProfile( GLUT_CORE_PROFILE );
 
   glutInitWindowSize(800, 800);
   glutCreateWindow("GLUT");

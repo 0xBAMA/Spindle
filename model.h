@@ -25,7 +25,26 @@ using std::endl;
 
 
 
-#include "Angel.h"
+// #include "Angel.h" //needed on the prime machines. (is it?)
+
+
+//**********************************************
+
+// GLEW
+#define GLEW_STATIC
+#include <GL/glew.h>
+
+
+// GLUT
+#include <GL/freeglut.h>
+#include <GL/freeglut_ext.h>
+
+
+// Shader Compilation
+#include "shaders/Shader.h"
+
+//**********************************************
+
 
 
 #define GLM_FORCE_SWIZZLE
@@ -180,7 +199,13 @@ BallModel::BallModel()
   glBufferSubData(GL_ARRAY_BUFFER, num_bytes_points + num_bytes_normals, num_bytes_colors, &colors[0]);
 
   //SHADERS (COMPILE, USE)
-  shader_program = InitShader("shaders/vSphere.glsl", "shaders/fSphere.glsl");
+
+
+  // shader_program = InitShader("shaders/vSphere.glsl", "shaders/fSphere.glsl");
+
+  Shader s("shaders/vSphere.glsl", "shaders/fSphere.glsl");
+
+  shader_program = s.Program;
 
   glUseProgram(shader_program);
 
@@ -498,7 +523,11 @@ CageModel::CageModel()
     glBufferSubData(GL_ARRAY_BUFFER, num_bytes_points, num_bytes_colors, &colors[0]);
 
     //SHADERS (COMPILE, USE)
-    shader_program = InitShader("shaders/vCage.glsl", "shaders/fCage.glsl");
+    // shader_program = InitShader("shaders/vCage.glsl", "shaders/fCage.glsl");
+
+    Shader s("shaders/vCage.glsl", "shaders/fCage.glsl");
+
+    shader_program = s.Program;
 
     glUseProgram(shader_program);
 
@@ -817,7 +846,11 @@ SerpinskiModel::SerpinskiModel()
     glBufferSubData(GL_ARRAY_BUFFER, 0, num_bytes_points, &points[0]);
 
     //SHADERS (COMPILE, USE)
-    shader_program = InitShader("shaders/vSerp.glsl", "shaders/fSerp.glsl");
+    // shader_program = InitShader("shaders/vSerp.glsl", "shaders/fSerp.glsl");
+
+    Shader s("shaders/vSerp.glsl", "shaders/fSerp.glsl");
+
+    shader_program = s.Program;
 
     glUseProgram(shader_program);
 

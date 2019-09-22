@@ -32,7 +32,7 @@ void main()
 
   vec3 rot_axis = vec3(1.0f, 1.0f, 0.0f);
 
-  float scale = 0.075 * sin(0.005*t) + 0.088;
+  float scale = 0.08 * sin(0.005*t) + 0.088;
 
   vec3 vPosition_local = (scale * vNormal) + vPosition;
 

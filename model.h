@@ -130,8 +130,11 @@ public:
 
   void display();
 
-  void set_time(int tin) {time = tin;}
-  void set_proj(glm::mat4 pin) {proj = pin;}
+  void set_time(int tin)        {time = tin;}
+  void set_proj(glm::mat4 pin)  {proj = pin;}
+  void toggle_scanlines()       {scan = scan ? 0 : 1;}
+  void toggle_depthcolor()      {dcolor = dcolor ? 0 : 1;}
+
 
 private:
   GLuint vao;
@@ -145,11 +148,13 @@ private:
   GLuint vColor;
 
 //UNIFORM LOCATIONS
-  GLuint uTime;
-  GLuint uProj;
+  GLuint uTime;   //animation time
+  GLuint uProj;   //projection matrix
+  GLuint uScan;   //draw scan lines true/false
+  GLuint uDcol;   //color fragments based on depth
 
 //VALUES OF THOSE UNIFORMS
-  int time;
+  int time, scan, dcolor;
   glm::mat4 proj;
 
   void generate_points();
@@ -231,6 +236,15 @@ BallModel::BallModel()
   uProj = glGetUniformLocation(shader_program, "proj");
   proj = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f);
   glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
+
+  uScan = glGetUniformLocation(shader_program, "scanlines");
+  scan = 0;
+  glUniform1i(uScan, scan);
+
+  uDcol = glGetUniformLocation(shader_program, "depthcolor");
+  dcolor = 0;
+  glUniform1i(uDcol, dcolor);
+
 
 }
 
@@ -419,6 +433,8 @@ void BallModel::display()
 
   glUniform1i(uTime, time);
   glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
+  glUniform1i(uScan, scan);
+  glUniform1i(uDcol, dcolor);
 
   glDrawArrays(GL_TRIANGLES, 0, 240); // there are 240 verticies for the 80 tris
 }
@@ -457,8 +473,11 @@ public:
 
   void display();
 
-  void set_time(int tin) {time = tin;}
-  void set_proj(glm::mat4 pin) {proj = pin;}
+  void set_time(int tin)        {time = tin;}
+  void set_proj(glm::mat4 pin)  {proj = pin;}
+  void toggle_depthcolor()      {dcol = dcol ? 0 : 1;}
+
+
 
 private:
   GLuint vao;
@@ -474,9 +493,10 @@ private:
 //UNIFORM LOCATIONS
   GLuint uTime;
   GLuint uProj;
+  GLuint uDcol;
 
 //VALUES OF THOSE UNIFORMS
-  int time;
+  int time, dcol;
   glm::mat4 proj;
 
   void generate_points();
@@ -550,6 +570,9 @@ CageModel::CageModel()
     proj = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f);
     glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
 
+    uDcol = glGetUniformLocation(shader_program, "depthcolor");
+    dcol = 0;
+    glUniform1i(uDcol, dcol);
 
 }
 
@@ -732,6 +755,7 @@ void CageModel::display()
 
   glUniform1i(uTime, time);
   glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
+  glUniform1i(uDcol, dcol);
 
   //there are 80 triangles, each have 3 sides
   //with this information, we can derive that there are 240 lines per layer, 480 points
@@ -928,6 +952,6 @@ void SerpinskiModel::display()
   //there are 80 triangles, each have 3 sides
   //with this information, we can derive that there are 240 lines per layer, 480 points
 
-  glPointSize(1.25f);
+  glPointSize(1.5f);
   glDrawArrays(GL_POINTS, 0, 20000);
 }

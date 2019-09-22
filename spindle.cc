@@ -5,7 +5,7 @@
 //  Email: jb239812@ohio.edu
 //
 //  Description: This file contains GLUT specific code to open a window and
-//       allow interaction. It instantiates models declared in model.h
+//       allow interaction. It instantiates model classes declared in model.h
 //
 //  Date: 20 September 2019
 //******************************************************************************
@@ -18,6 +18,14 @@ int animation_time = 0;
 BallModel*       ball;
 CageModel*       cage;
 SerpinskiModel*  serp;
+
+//should you draw the models?
+bool drawball = true;
+bool drawcage = true;
+bool drawserp = true;
+
+bool rotate = true;
+int temp_time = animation_time;
 
 void init()
 {
@@ -36,6 +44,7 @@ void init()
   // glClearColor(1/phi, 1/phi, 1/phi, 1.0); // grey background
 
   glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+
 }
 
 //----------------------------------------------------------------------------
@@ -45,15 +54,23 @@ extern "C" void display()
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  animation_time++;
 
-  ball->set_time(animation_time);
-  cage->set_time(animation_time);
-  serp->set_time(animation_time);
+  if(rotate)
+  {
+    animation_time++;
+    ball->set_time(animation_time);
+    cage->set_time(animation_time);
+    serp->set_time(animation_time);
+  }
 
-  ball->display();
-  cage->display();
-  serp->display();
+  if(drawball)
+    ball->display();
+
+  if(drawcage)
+    cage->display();
+
+  if(drawserp)
+    serp->display();
 
   glFlush();
   glutSwapBuffers();
@@ -82,9 +99,74 @@ extern "C" void keyboard(unsigned char key, int x, int y)
   case 033:
     exit(EXIT_SUCCESS);
     break;
+
+
+  case 'a':
+    ball->toggle_depthcolor();
+    break;
+  case 's':
+    cage->toggle_depthcolor();
+    break;
+
+
+
+
+  case 'z':
+    //toggle drawing of ball
+    drawball = !drawball;
+    break;
+  case 'x':
+    //toggle drawing of cage
+    drawcage = !drawcage;
+    break;
+  case 'c':
+    //toggle drawing of serpinski action
+    drawserp = !drawserp;
+    break;
+  case 'v':
+    //stop or start the rotation;
+    temp_time = animation_time;
+    rotate = !rotate;
+    break;
+  case 'b':
+    ball->toggle_scanlines();
+    break;
   }
   glutPostRedisplay();
 }
+
+//----------------------------------------------------------------------------
+
+
+// not working on laptop - probably an incompatibility with i3 display manager
+//
+// static int menu_id;
+// static int submenu_id;
+//
+// extern "C" void menu(int choice)
+// {
+//   cout << choice << endl;
+// }
+//
+// void create_menu()
+// {
+//   //this is some example code from https://www.programming-techniques.com/2012/05/glut-tutorial-creating-menus-and-submenus-in-glut.html
+//   submenu_id = glutCreateMenu(menu);
+//
+//   glutAddMenuEntry("Sphere", 2);
+//   glutAddMenuEntry("Cone", 3);
+//   glutAddMenuEntry("Torus", 4);
+//   glutAddMenuEntry("Teapot", 5);
+//
+//   menu_id = glutCreateMenu(menu);
+//
+//   glutAddMenuEntry("Clear", 1);
+//   glutAddSubMenu("Draw", submenu_id);
+//   glutAddMenuEntry("Quit", 0);
+//
+//   glutAttachMenu(GLUT_RIGHT_BUTTON);
+// }
+
 
 //----------------------------------------------------------------------------
 
@@ -104,6 +186,8 @@ int main(int argc, char **argv)
   glewInit();
 
   init();
+
+  // create_menu();
 
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);

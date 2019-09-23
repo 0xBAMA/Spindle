@@ -30,7 +30,7 @@ void main()
 
   vec3 vPosition_local = (0.995 + 0.005 * sin(0.3*t)) * vPosition;
 
-  gl_Position = (rotationMatrix(rot_axis, 0.00075f * t) * proj * vec4(vPosition_local, 1.0f));
+  gl_Position = proj * (rotationMatrix(rot_axis, 0.00075f * t) * vec4(vPosition_local, 1.0f));
 
   float val;
 

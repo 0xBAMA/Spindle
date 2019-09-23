@@ -36,7 +36,7 @@ void main()
 
   vec3 vPosition_local = (scale * vNormal) + vPosition;
 
-  gl_Position = rotationMatrix(rot_axis, 0.0075f * t) * proj * vec4(vPosition_local, 1.0f);
+  gl_Position = proj * rotationMatrix(rot_axis, 0.0075f * t) * vec4(vPosition_local, 1.0f);
 
   color = vec4(vColor, 1.0f);
 

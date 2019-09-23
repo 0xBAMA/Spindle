@@ -29,7 +29,7 @@ void main()
 {
   vec3 rot_axis = vec3(1.0f, 1.0f, 0.0f);
 
-  gl_Position = rotationMatrix(rot_axis, 0.0075f * t) * proj * vec4(vPosition, 1.0f);
+  gl_Position = proj * rotationMatrix(rot_axis, 0.0075f * t) * vec4(vPosition, 1.0f);
 
   color = vColor;
 }

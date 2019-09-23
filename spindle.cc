@@ -27,11 +27,32 @@ bool drawserp = true;
 bool rotate = true;
 int temp_time = animation_time;
 
+//orthographic projection matrix
+// GLfloat left = -1.366f;
+// GLfloat right = 1.366f;
+// GLfloat top = -0.768f;
+// GLfloat bottom = 0.768f;
+// GLfloat zNear = -1.0f;
+// GLfloat zFar = 1.0f;
+
 void init()
 {
   ball = new BallModel();
   cage = new CageModel();
   serp = new SerpinskiModel();
+
+  GLfloat left = -1.366f;
+  GLfloat right = 1.366f;
+  GLfloat top = -0.768f;
+  GLfloat bottom = 0.768f;
+  GLfloat zNear = 1.0f;
+  GLfloat zFar = -1.0f;
+
+  glm::mat4 proj = glm::ortho(left, right, top, bottom, zNear, zFar);
+
+  ball->set_proj(proj);
+  cage->set_proj(proj);
+  serp->set_proj(proj);
 
   glEnable(GL_DEPTH_TEST);
 
@@ -80,16 +101,37 @@ extern "C" void display()
 
 //----------------------------------------------------------------------------
 
-// extern "C" void reshape(int width, int height)
-// {
-//   // projection = glm::ortho();
-//
-//   // glUniformMatrix4fv(proj_loc_ball, 1, GL_FALSE, glm::value_ptr(projection));
-//   // glUniformMatrix4fv(proj_loc_cage, 1, GL_FALSE, glm::value_ptr(projection));
-//   //
-//   // cout << "width is " << width << " and height is " << height << endl;
-//
-// }
+extern "C" void reshape(int width, int height)
+{
+  // GLfloat left = -1.366f;
+  // GLfloat right = 1.366f;
+  // GLfloat top = -0.768f;
+  // GLfloat bottom = 0.768f;
+  // GLfloat zNear = 1.0f;
+  // GLfloat zFar = -1.0f;
+
+  // GLfloat left = -1.366f;
+  // GLfloat right = 1.366f;
+  // GLfloat top = -0.768f;
+  // GLfloat bottom = 0.768f;
+  // GLfloat zNear = 1.0f;
+  // GLfloat zFar = -1.0f;
+
+  cout << width << " " << height << endl;
+
+  GLfloat left = -1.0f * (width / 1000.0f);
+  GLfloat right = 1.0f * (width / 1000.0f);
+  GLfloat top = -1.0f * (height / 1000.0f);
+  GLfloat bottom = 1.0f * (height / 1000.0f);
+  GLfloat zNear = 1.0f;
+  GLfloat zFar = -1.0f;
+
+  glm::mat4 proj = glm::ortho(left, right, top, bottom, zNear, zFar);
+
+  ball->set_proj(proj);
+  cage->set_proj(proj);
+  serp->set_proj(proj);
+}
 
 //----------------------------------------------------------------------------
 
@@ -106,6 +148,12 @@ extern "C" void keyboard(unsigned char key, int x, int y)
     break;
   case 's':
     cage->toggle_depthcolor();
+    break;
+
+
+
+  case 'f':
+    glutFullScreen();
     break;
 
 
@@ -139,33 +187,33 @@ extern "C" void keyboard(unsigned char key, int x, int y)
 
 
 // not working on laptop - probably an incompatibility with i3 display manager
-//
-// static int menu_id;
-// static int submenu_id;
-//
-// extern "C" void menu(int choice)
-// {
-//   cout << choice << endl;
-// }
-//
-// void create_menu()
-// {
-//   //this is some example code from https://www.programming-techniques.com/2012/05/glut-tutorial-creating-menus-and-submenus-in-glut.html
-//   submenu_id = glutCreateMenu(menu);
-//
-//   glutAddMenuEntry("Sphere", 2);
-//   glutAddMenuEntry("Cone", 3);
-//   glutAddMenuEntry("Torus", 4);
-//   glutAddMenuEntry("Teapot", 5);
-//
-//   menu_id = glutCreateMenu(menu);
-//
-//   glutAddMenuEntry("Clear", 1);
-//   glutAddSubMenu("Draw", submenu_id);
-//   glutAddMenuEntry("Quit", 0);
-//
-//   glutAttachMenu(GLUT_RIGHT_BUTTON);
-// }
+
+static int menu_id;
+static int submenu_id;
+
+extern "C" void menu(int choice)
+{
+  cout << choice << endl;
+}
+
+void create_menu()
+{
+  //this is some example code from https://www.programming-techniques.com/2012/05/glut-tutorial-creating-menus-and-submenus-in-glut.html
+  submenu_id = glutCreateMenu(menu);
+
+  glutAddMenuEntry("Sphere", 2);
+  glutAddMenuEntry("Cone", 3);
+  glutAddMenuEntry("Torus", 4);
+  glutAddMenuEntry("Teapot", 5);
+
+  menu_id = glutCreateMenu(menu);
+
+  glutAddMenuEntry("Clear", 1);
+  glutAddSubMenu("Draw", submenu_id);
+  glutAddMenuEntry("Quit", 0);
+
+  glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
 
 
 //----------------------------------------------------------------------------
@@ -187,11 +235,11 @@ int main(int argc, char **argv)
 
   init();
 
-  // create_menu();
+  create_menu();
 
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);
-  // glutReshapeFunc(reshape);
+  glutReshapeFunc(reshape);
 
   glutMainLoop();
   return(EXIT_SUCCESS);

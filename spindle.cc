@@ -27,13 +27,8 @@ bool drawserp = true;
 bool rotate = true;
 int temp_time = animation_time;
 
-//orthographic projection matrix
-// GLfloat left = -1.366f;
-// GLfloat right = 1.366f;
-// GLfloat top = -0.768f;
-// GLfloat bottom = 0.768f;
-// GLfloat zNear = -1.0f;
-// GLfloat zFar = 1.0f;
+
+
 
 void init()
 {
@@ -41,12 +36,19 @@ void init()
   cage = new CageModel();
   serp = new SerpinskiModel();
 
-  GLfloat left = -1.366f;
-  GLfloat right = 1.366f;
-  GLfloat top = -0.768f;
-  GLfloat bottom = 0.768f;
-  GLfloat zNear = 1.0f;
-  GLfloat zFar = -1.0f;
+  // GLfloat left = -1.920f;
+  // GLfloat right = 1.920f;
+  // GLfloat top =  -1.080f;
+  // GLfloat bottom = 1.080f;
+  // GLfloat zNear = -1.0f;
+  // GLfloat zFar = 1.0f;
+
+  // GLfloat left = -1.366f;
+  // GLfloat right = 1.366f;
+  // GLfloat top = -0.768f;
+  // GLfloat bottom = 0.768f;
+  // GLfloat zNear = 1.0f;
+  // GLfloat zFar = -1.0f;
 
   glm::mat4 proj = glm::ortho(left, right, top, bottom, zNear, zFar);
 
@@ -101,37 +103,81 @@ extern "C" void display()
 
 //----------------------------------------------------------------------------
 
-extern "C" void reshape(int width, int height)
-{
-  // GLfloat left = -1.366f;
-  // GLfloat right = 1.366f;
-  // GLfloat top = -0.768f;
-  // GLfloat bottom = 0.768f;
-  // GLfloat zNear = 1.0f;
-  // GLfloat zFar = -1.0f;
 
-  // GLfloat left = -1.366f;
-  // GLfloat right = 1.366f;
-  // GLfloat top = -0.768f;
-  // GLfloat bottom = 0.768f;
-  // GLfloat zNear = 1.0f;
-  // GLfloat zFar = -1.0f;
-
-  cout << width << " " << height << endl;
-
-  GLfloat left = -1.0f * (width / 1000.0f);
-  GLfloat right = 1.0f * (width / 1000.0f);
-  GLfloat top = -1.0f * (height / 1000.0f);
-  GLfloat bottom = 1.0f * (height / 1000.0f);
-  GLfloat zNear = 1.0f;
-  GLfloat zFar = -1.0f;
-
-  glm::mat4 proj = glm::ortho(left, right, top, bottom, zNear, zFar);
-
-  ball->set_proj(proj);
-  cage->set_proj(proj);
-  serp->set_proj(proj);
-}
+//calling this quits for now
+//
+// extern "C" void reshape(int width, int height)
+// {
+//
+//
+//
+//
+//   // int smaller_of_the_two = (width <= height) ? width : height;
+//   // cout << width << " " << height << " the smaller of which is " << smaller_of_the_two << endl;
+//   //
+//   //
+//   // GLfloat left    = -1.0f * (smaller_of_the_two / 1000.0f);
+//   // GLfloat right   =  1.0f * (smaller_of_the_two / 1000.0f);
+//   // GLfloat top     = -1.0f * (smaller_of_the_two / 1000.0f);
+//   // GLfloat bottom  =  1.0f * (smaller_of_the_two / 1000.0f);
+//   // GLfloat zNear   =  1.0f;
+//   // GLfloat zFar    = -1.0f;
+//   //
+//   //
+//   //
+//   //
+//   //
+//   // GLfloat left;
+//   // GLfloat right;
+//   // GLfloat top;
+//   // GLfloat bottom;
+//   // GLfloat zNear;
+//   // GLfloat zFar;
+//   //
+//   // GLfloat widthoverheight = (float)width/(float)height;
+//   // GLfloat heightoverwidth = (float)height/(float)width;
+//   //
+//   //
+//   // if(width < height)
+//   // {//width < height means we are taller than we are wide - scale side to side assuming unit width
+//   //   //therefore, the height should be a number > 1
+//   //
+//   //   cout << "tall" << endl;
+//   //
+//   //   left    = -1.0f;
+//   //   right   =  1.0f;
+//   //   top     =  widthoverheight;
+//   //   bottom  = -widthoverheight;
+//   //   zNear   =  1.0f;
+//   //   zFar    = -1.0f;
+//   //
+//   // }
+//   // else
+//   // {//the height is the unit
+//   //
+//   //   cout << "wide" << endl;
+//   //
+//   //   left    = -heightoverwidth;
+//   //   right   =  heightoverwidth;
+//   //   top     =  1.0f;
+//   //   bottom  = -1.0f;
+//   //   zNear   =  1.0f;
+//   //   zFar    = -1.0f;
+//   // }
+//
+//   GLfloat left = -1.920f;
+//   GLfloat right = 1.920f;
+//   GLfloat top =  1.080f;
+//   GLfloat bottom = -1.080f;
+//   GLfloat zNear = 1.0f;
+//   GLfloat zFar = -1.0f;
+//
+//   glm::mat4 proj = glm::ortho(left, right, top, bottom, zNear, zFar);
+//
+//   ball->set_proj(proj);
+//   cage->set_proj(proj);
+//   serp->set_proj(proj);
+// }
 
 //----------------------------------------------------------------------------
 
@@ -228,8 +274,9 @@ int main(int argc, char **argv)
   glutInitContextVersion( 4, 5 );
 	glutInitContextProfile( GLUT_CORE_PROFILE );
 
-  glutInitWindowSize(800, 800);
+  // glutInitWindowSize(800, 800);
   glutCreateWindow("GLUT");
+  glutFullScreen();
 
   glewInit();
 
@@ -239,7 +286,7 @@ int main(int argc, char **argv)
 
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);
-  glutReshapeFunc(reshape);
+  // glutReshapeFunc(reshape);
 
   glutMainLoop();
   return(EXIT_SUCCESS);

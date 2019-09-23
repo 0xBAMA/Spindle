@@ -424,12 +424,12 @@ void BallModel::generate_points()
 void BallModel::display()
 {
   glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  // glBindBuffer(GL_ARRAY_BUFFER, buffer);
   glUseProgram(shader_program);
 
-  glEnableVertexAttribArray(vPosition);
-  glEnableVertexAttribArray(vNormal);
-  glEnableVertexAttribArray(vColor);
+  // glEnableVertexAttribArray(vPosition);
+  // glEnableVertexAttribArray(vNormal);
+  // glEnableVertexAttribArray(vColor);
 
   glUniform1i(uTime, time);
   glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
@@ -747,11 +747,11 @@ void CageModel::generate_points()
 void CageModel::display()
 {
   glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  // glBindBuffer(GL_ARRAY_BUFFER, buffer);
   glUseProgram(shader_program);
 
-  glEnableVertexAttribArray(vPosition);
-  glEnableVertexAttribArray(vColor);
+  // glEnableVertexAttribArray(vPosition);
+  // glEnableVertexAttribArray(vColor);
 
   glUniform1i(uTime, time);
   glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
@@ -941,10 +941,10 @@ void SerpinskiModel::generate_points()
 void SerpinskiModel::display()
 {
   glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  // glBindBuffer(GL_ARRAY_BUFFER, buffer);
   glUseProgram(shader_program);
 
-  glEnableVertexAttribArray(vPosition);
+  // glEnableVertexAttribArray(vPosition);
 
   glUniform1i(uTime, time);
   glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));

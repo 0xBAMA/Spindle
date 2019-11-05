@@ -206,8 +206,6 @@ BallModel::BallModel()
   //SHADERS (COMPILE, USE)
 
 
-  // shader_program = InitShader("shaders/vSphere.glsl", "shaders/fSphere.glsl");
-
   Shader s("shaders/vSphere.glsl", "shaders/fSphere.glsl");
 
   shader_program = s.Program;

@@ -30,6 +30,8 @@ void main()
 
   vec3 vPosition_local = (0.995 + 0.005 * sin(0.3*t)) * vPosition;
 
+
+
   gl_Position = proj * (rotationMatrix(rot_axis, 0.00075f * t) * vec4(vPosition_local, 1.0f));
 
   float val;
@@ -37,11 +39,14 @@ void main()
   if(gl_VertexID < (t % 20000))
   {
     color = vec4(1.0f, 0.75f, 0.3 * sin(0.01*t), 1.0f);
+    gl_PointSize = 6.0;
   }
   else
   {
     // val = 0.3f * sin(t * 0.05);
     // color = vec4(val, val, val, 1.0f);
     color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    gl_PointSize = 1.0;
+
   }
 }

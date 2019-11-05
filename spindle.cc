@@ -43,12 +43,12 @@ void init()
   // GLfloat zNear = -1.0f;
   // GLfloat zFar = 1.0f;
 
-  // GLfloat left = -1.366f;
-  // GLfloat right = 1.366f;
-  // GLfloat top = -0.768f;
-  // GLfloat bottom = 0.768f;
-  // GLfloat zNear = 1.0f;
-  // GLfloat zFar = -1.0f;
+  GLfloat left = -1.366f;
+  GLfloat right = 1.366f;
+  GLfloat top = -0.768f;
+  GLfloat bottom = 0.768f;
+  GLfloat zNear = 1.0f;
+  GLfloat zFar = -1.0f;
 
   glm::mat4 proj = glm::ortho(left, right, top, bottom, zNear, zFar);
 
@@ -58,10 +58,13 @@ void init()
 
   glEnable(GL_DEPTH_TEST);
 
+  // glEnable(GL_DITHER); //something interesting to mess with in the future
+
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   glEnable(GL_LINE_SMOOTH);
+  glEnable(GL_PROGRAM_POINT_SIZE);
 
   // double phi = (1 + std::sqrt(5.0))/2.0;  //golden ratio, used to compute icosahedron
   // glClearColor(1/phi, 1/phi, 1/phi, 1.0); // grey background

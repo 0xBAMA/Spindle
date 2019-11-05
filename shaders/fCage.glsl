@@ -3,8 +3,7 @@ varying  vec4 color;
 
 uniform int depthcolor; //should you darken deeper fragments?
 
-void
-main()
+void main()
 {
 
     if(depthcolor == 1)
